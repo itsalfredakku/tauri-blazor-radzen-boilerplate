@@ -7,7 +7,10 @@ channel = "stable"
 # targets = [
 #    "x86_64-unknown-linux-gnu",
 #    "x86_64-pc-windows-msvc",
-#    "universal-apple-darwin"
+#    "x86_64-apple-darwin",
+#    "aarch64-apple-darwin"
+#    # universal-apple-darwin is a special target that combines both macOS architectures
+#    # and is handled specially by the build system
 # ]
 
 # Install only the components we need to minimize installation time

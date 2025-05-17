@@ -14,6 +14,7 @@ CLEAN=false
 RELEASE=false
 VERBOSE=false
 HELP=false
+UNIVERSAL=false
 TARGET=""
 
 for arg in "$@"; do
@@ -28,6 +29,10 @@ for arg in "$@"; do
       ;;
     --verbose)
       VERBOSE=true
+      shift
+      ;;
+    --universal)
+      UNIVERSAL=true
       shift
       ;;
     --help)
@@ -56,6 +61,7 @@ if [[ "$HELP" == true ]]; then
   echo "  --release   Build in release mode"
   echo "  --verbose   Show verbose output"
   echo "  --target=*  Specify a target (e.g. --target=x86_64-apple-darwin)"
+  echo "  --universal Build universal macOS binary (macOS only)"
   echo "  --help      Show this help message"
   exit 0
 fi
@@ -117,6 +123,18 @@ fi
 
 if [[ -n "$TARGET" ]]; then
   CARGO_ARGS="$CARGO_ARGS --target $TARGET"
+elif [[ "$UNIVERSAL" == true ]]; then
+  # Check if we're on macOS for universal builds
+  if [[ "$(uname)" != "Darwin" ]]; then
+    echo "❌ Universal builds are only supported on macOS"
+    exit 1
+  fi
+  
+  # Ensure both required targets are installed
+  echo "🔄 Checking Rust targets for universal build..."
+  rustup target add x86_64-apple-darwin aarch64-apple-darwin
+  
+  CARGO_ARGS="$CARGO_ARGS --target universal-apple-darwin"
 fi
 
 if [[ "$VERBOSE" == true ]]; then

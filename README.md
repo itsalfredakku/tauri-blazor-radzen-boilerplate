@@ -44,11 +44,52 @@ cd tauri-blazor-boilerplate
 cargo install tauri-cli
 ```
 
-3. Run the development server:
+3. Install Rust targets (for cross-compilation or macOS universal builds):
+
+```bash
+# For macOS universal builds
+rustup target add x86_64-apple-darwin aarch64-apple-darwin
+
+# For other platforms if needed
+rustup target add x86_64-unknown-linux-gnu
+rustup target add x86_64-pc-windows-msvc
+```
+
+4. Run the development server:
 
 ```bash
 cargo tauri dev
 ```
+
+## Building for Release
+
+### Standard Release Build
+
+```bash
+# Build for release (all platforms)
+cargo tauri build
+```
+
+### macOS Universal Binary
+
+For creating macOS universal binaries (works on both Intel and Apple Silicon):
+
+```bash
+# Build a universal macOS binary (Apple Silicon + Intel)
+cargo tauri build --target universal-apple-darwin
+```
+
+Or use our helper script:
+
+```bash
+# Using the dedicated script
+./scripts/build-macos-universal.sh
+
+# Or using the fast-build script with universal flag
+./scripts/fast-build.sh --universal --release
+```
+
+For more information on macOS universal builds, see [MACOS_UNIVERSAL_BUILDS.md](docs/MACOS_UNIVERSAL_BUILDS.md).
 
 This will:
 - Start the Blazor WebAssembly development server

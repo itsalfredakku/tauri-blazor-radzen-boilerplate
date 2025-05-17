@@ -108,7 +108,8 @@ jobs:
       - name: Install Rust stable
         uses: dtolnay/rust-toolchain@stable
         with:
-          targets: ${{ matrix.target }}
+          # For macOS universal builds, we need both architectures
+          targets: ${{ matrix.platform == 'macos-latest' && 'x86_64-apple-darwin aarch64-apple-darwin' || matrix.target }}
           
       # Cache Rust dependencies
       - name: Cache Rust Dependencies and Build Artifacts
@@ -181,7 +182,9 @@ jobs:
         with:
           releaseId: ${{ needs.create-release.outputs.release_id }}
           tauriScript: cargo tauri
-          args: "--target ${{ matrix.target }} --verbose"
+          args: >
+            ${{ matrix.platform == 'macos-latest' && '--target universal-apple-darwin' || format('--target {0}', matrix.target) }}
+            --verbose
           
       - name: Build Tauri app (without release upload)
         if: needs.create-release.outputs.release_id == '0'
@@ -202,7 +205,12 @@ jobs:
         run: |
           echo "Building Tauri app without release upload because release creation failed"
           cd src-tauri
-          cargo tauri build --target ${{ matrix.target }} --verbose
+          # Use proper target for each platform
+          if [[ "${{ matrix.platform }}" == "macos-latest" ]]; then
+            cargo tauri build --target universal-apple-darwin --verbose
+          else
+            cargo tauri build --target ${{ matrix.target }} --verbose
+          fi
         
   publish-release:
     runs-on: ubuntu-latest

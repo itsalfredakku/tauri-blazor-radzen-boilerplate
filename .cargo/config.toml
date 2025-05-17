@@ -6,7 +6,13 @@
 jobs = 4
 
 # Enable cross-compilation if needed
-# target = ["x86_64-unknown-linux-gnu", "x86_64-pc-windows-msvc", "universal-apple-darwin"]
+# target = ["x86_64-unknown-linux-gnu", "x86_64-pc-windows-msvc", "x86_64-apple-darwin", "aarch64-apple-darwin"]
+
+# Configuration for macOS universal builds
+[target.universal-apple-darwin]
+# This is not a real rustc target, but a special target used by Tauri for universal macOS builds
+# When building for this target, both x86_64-apple-darwin and aarch64-apple-darwin will be built
+# and combined into a universal binary
 
 [profile.dev]
 # Optimize for faster development builds

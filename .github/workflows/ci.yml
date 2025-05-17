@@ -47,6 +47,9 @@ jobs:
 
       - name: Install Rust stable
         uses: dtolnay/rust-toolchain@stable
+        with:
+          # For macOS universal builds, we need both architectures
+          targets: ${{ matrix.platform == 'macos-latest' && 'x86_64-apple-darwin aarch64-apple-darwin' || '' }}
         
       # Significantly improved Rust caching
       - name: Cache Rust Dependencies and Build Artifacts
@@ -147,4 +150,8 @@ jobs:
           CARGO_BUILD_JOBS: 4
         run: |
           # Build with optimized settings
-          cargo tauri build --ci --verbose
+          if [[ "${{ matrix.platform }}" == "macos-latest" ]]; then
+            cargo tauri build --target universal-apple-darwin --ci --verbose
+          else
+            cargo tauri build --ci --verbose
+          fi

@@ -76,6 +76,34 @@
                 "panel": "new"
             },
             "problemMatcher": []
+        },
+        {
+            "label": "build-macos-universal",
+            "type": "shell",
+            "command": "${workspaceFolder}/scripts/build-macos-universal.sh",
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            },
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            }
+        },
+        {
+            "label": "fast-build-universal",
+            "type": "shell",
+            "command": "${workspaceFolder}/scripts/fast-build.sh --universal",
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            },
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            }
         }
     ]
 }

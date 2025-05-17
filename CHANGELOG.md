@@ -17,6 +17,11 @@ All notable changes to this project will be documented in this file.
 ### Changed
 - Updated to .NET 9.0
 - Modern UI with Material 3 design
+- Improved macOS universal binary build process
+- Enhanced build scripts for development and CI/CD
 
 ### Fixed
+- WebKitGTK dependency resolution for Ubuntu 24.04
+- Port conflict issues in development server
+- macOS universal build configuration
 - Initial setup issues and warnings
