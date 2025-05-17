@@ -96,7 +96,7 @@ jobs:
           cargo install tauri-cli --locked --force
 
       - name: Restore dependencies
-        run: dotnet restore
+        run: dotnet restore src/TauriBlazorBoilerplate.csproj
 
       - name: Build Blazor WebAssembly App
         run: dotnet build -c Release --no-restore src/TauriBlazorBoilerplate.csproj
