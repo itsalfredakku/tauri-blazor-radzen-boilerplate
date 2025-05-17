@@ -23,3 +23,17 @@ tauri-plugin-opener = "2"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 
+# Added optimization profiles
+[profile.dev]
+opt-level = 1      # Use slightly better optimizations in dev mode
+debug = 0          # Reduce debug info for faster compilation
+split-debuginfo = "unpacked"  # Separate debug information
+incremental = true # Enable incremental compilation
+
+[profile.release]
+opt-level = 3      # Maximum optimization
+lto = "thin"       # Enable link-time optimization but keep reasonable build times
+codegen-units = 1  # Maximize optimization opportunities
+panic = "abort"    # No unwinding for panics in release builds - smaller binaries
+strip = true       # Strip symbols from binary
+

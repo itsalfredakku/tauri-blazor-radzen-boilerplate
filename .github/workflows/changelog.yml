@@ -31,6 +31,14 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 'lts/*'
+          
+      # Manually manage npm cache instead of using the built-in cache
+      - name: Cache npm dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
             ${{ runner.os }}-npm-
           
       - name: Install Conventional Changelog CLI
@@ -104,7 +112,5 @@ jobs:
                 console.log(`No release found for tag ${tag}`);
               }
             } catch (error) {
-              console.error(`Error updating release: ${error}`);
+              console.error(`Error updating release: ${error.message}`);
             }
-        env:
-          VERSION: ${{ env.VERSION }}

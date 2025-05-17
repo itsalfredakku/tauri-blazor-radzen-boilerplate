@@ -1,0 +1,76 @@
+name: Rust Cache and Build
+
+on:
+  workflow_call:
+    inputs:
+      toolchain:
+        description: 'Rust toolchain to use'
+        required: false
+        default: 'stable'
+        type: string
+      cargo-args:
+        description: 'Additional arguments to pass to cargo'
+        required: false
+        default: ''
+        type: string
+      working-directory:
+        description: 'Working directory for Rust commands'
+        required: false
+        default: 'src-tauri'
+        type: string
+      platform:
+        description: 'Platform to build for'
+        required: false
+        default: ''
+        type: string
+
+jobs:
+  setup-rust:
+    runs-on: ${{ inputs.platform || github.job_runner_context }}
+    defaults:
+      run:
+        working-directory: ${{ inputs.working-directory }}
+    steps:
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: ${{ inputs.toolchain }}
+      
+      # Super optimized Rust caching strategy
+      - name: Cache Rust Dependencies and Build Artifacts
+        uses: actions/cache@v4
+        id: rust-cache
+        with:
+          path: |
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            ~/.cargo/.crates.toml
+            ~/.cargo/.crates2.json
+            ${{ inputs.working-directory }}/target/
+          key: ${{ runner.os }}-rust-${{ hashFiles('**/Cargo.lock') }}-${{ hashFiles('**/Cargo.toml') }}-${{ inputs.toolchain }}
+          restore-keys: |
+            ${{ runner.os }}-rust-${{ hashFiles('**/Cargo.lock') }}-${{ hashFiles('**/Cargo.toml') }}-
+            ${{ runner.os }}-rust-${{ hashFiles('**/Cargo.lock') }}-
+            ${{ runner.os }}-rust-
+      
+      # Set optimized environment variables for faster compilation
+      - name: Set Rust env vars
+        run: |
+          echo "CARGO_INCREMENTAL=0" >> $GITHUB_ENV
+          echo "CARGO_NET_RETRY=10" >> $GITHUB_ENV
+          echo "RUSTUP_MAX_RETRIES=10" >> $GITHUB_ENV
+          echo "CARGO_TERM_COLOR=always" >> $GITHUB_ENV
+          echo "CARGO_PROFILE_DEV_DEBUG=0" >> $GITHUB_ENV
+          echo "CARGO_PROFILE_DEV_SPLIT_DEBUGINFO=unpacked" >> $GITHUB_ENV
+          # Use parallel compilation based on available cores - this is a good default for CI
+          echo "CARGO_BUILD_JOBS=4" >> $GITHUB_ENV
+
+      # Check cargo version to confirm setup
+      - name: Cargo version
+        run: cargo --version
+      
+      # Optional build step using provided arguments
+      - name: Build with cargo
+        if: inputs.cargo-args != ''
+        run: cargo ${{ inputs.cargo-args }}

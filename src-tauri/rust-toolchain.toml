@@ -1,0 +1,17 @@
+[toolchain]
+# Use the stable channel
+channel = "stable"
+
+# Specify target platforms for cross-compilation
+# Only enable these if you need cross-compilation
+# targets = [
+#    "x86_64-unknown-linux-gnu",
+#    "x86_64-pc-windows-msvc",
+#    "universal-apple-darwin"
+# ]
+
+# Install only the components we need to minimize installation time
+components = ["rustc", "cargo", "rust-std"]
+
+# Make sure toolchain installation works even with intermittent network issues
+profile = "minimal"

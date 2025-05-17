@@ -48,16 +48,17 @@ jobs:
       - name: Install Rust stable
         uses: dtolnay/rust-toolchain@stable
         
-      # Cache Rust dependencies
-      - name: Cache Rust dependencies
+      # Significantly improved Rust caching
+      - name: Cache Rust Dependencies and Build Artifacts
         uses: actions/cache@v4
+        id: rust-cache
         with:
           path: |
-            ~/.cargo/registry
-            ~/.cargo/git
+            ~/.cargo
             src-tauri/target
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}-${{ hashFiles('**/Cargo.toml') }}
           restore-keys: |
+            ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
             ${{ runner.os }}-cargo-
         
       - name: Install dependencies (ubuntu only)
@@ -80,17 +81,19 @@ jobs:
           echo "Using WebKitGTK package: $WEBKIT_DEV_PACKAGE"
           sudo apt-get install -y --no-install-recommends libgtk-3-dev $WEBKIT_DEV_PACKAGE libappindicator3-dev librsvg2-dev patchelf
 
-      # Cache Tauri CLI installation
+      # Cache Tauri CLI installation - better caching strategy
       - name: Cache Tauri CLI
         id: cache-tauri-cli
         uses: actions/cache@v4
         with:
           path: ~/.cargo/bin/cargo-tauri
-          key: ${{ runner.os }}-cargo-tauri-cli
+          key: ${{ runner.os }}-cargo-tauri-cli-${{ hashFiles('**/Cargo.lock') }}
           
       - name: Install Tauri CLI
         if: steps.cache-tauri-cli.outputs.cache-hit != 'true'
-        run: cargo install tauri-cli --locked
+        run: |
+          # Using --force to ensure proper installation and --debug=false to speed up
+          cargo install tauri-cli --locked --force --debug=false
 
       - name: Restore dependencies
         run: dotnet restore
@@ -102,8 +105,18 @@ jobs:
         run: dotnet test --no-build --verbosity normal
 
       - name: Build Tauri Application
+        env:
+          # Significantly optimize Rust compilation
+          CARGO_INCREMENTAL: 0
+          CARGO_NET_RETRY: 10
+          RUSTUP_MAX_RETRIES: 10
+          CARGO_TERM_COLOR: always
+          CARGO_PROFILE_DEV_DEBUG: 0
+          CARGO_PROFILE_DEV_SPLIT_DEBUGINFO: "unpacked"
+          CARGO_PROFILE_DEV_OPT_LEVEL: 1
+          RUSTFLAGS: "-C target-cpu=native"
+          # Set parallel compilation based on available cores
+          CARGO_BUILD_JOBS: 4
         run: |
-          # Set environment variable to optimize Rust compilation
-          export CARGO_PROFILE_DEV_BUILD_OVERRIDE_DEBUG=false
-          export CARGO_PROFILE_DEV_DEBUG=0
-          cargo tauri build --ci
+          # Build with optimized settings
+          cargo tauri build --ci --verbose

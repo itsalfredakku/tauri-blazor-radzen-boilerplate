@@ -49,6 +49,37 @@ This will:
 - Build and run the Tauri application
 - Enable hot reloading for both frontend and backend changes
 
+### Build & Run
+
+This project includes optimized build scripts to speed up development and compilation:
+
+```bash
+# Run the optimized build script
+./scripts/fast-build.sh
+
+# For release build
+./scripts/fast-build.sh --release
+
+# Clean and rebuild everything
+./scripts/fast-build.sh --clean --release
+```
+
+### Development
+
+```bash
+# Start in development mode
+cargo tauri dev
+```
+
+### Optimize Rust Compilation (Optional)
+
+To optimize Rust compilation for your specific machine:
+
+```bash
+# Run the optimization script
+./scripts/optimize-rust.sh
+```
+
 ### Building for Production
 
 Build a production-ready application:
@@ -58,6 +89,21 @@ cargo tauri build
 ```
 
 Your compiled application will be available in the `src-tauri/target/release/bundle` directory.
+
+## Performance Optimizations
+
+### Rust Compilation Optimizations
+This project includes several optimizations to speed up Rust compilation:
+
+- **Cargo Configuration**: Custom `.cargo/config.toml` with optimized settings
+- **Rust Toolchain Control**: Specific toolchain requirements in `rust-toolchain.toml`
+- **CI/CD Optimizations**: Efficient caching and build configurations
+- **Release Build Tuning**: Optimized release compilation flags for smaller, faster binaries
+
+### Development Workflow Optimizations
+- Incremental compilation settings for faster dev cycles
+- Efficient Node.js and .NET dependencies caching
+- Parallel compilation enabled by default
 
 ## Project Structure
 
