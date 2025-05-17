@@ -103,6 +103,11 @@ Your compiled application will be available in the `src-tauri/target/release/bun
 - Works on various screen sizes
 - Mobile-friendly UI
 
+### 6. CI/CD Workflows
+- Continuous Integration with GitHub Actions
+- Automated releases for Windows, macOS, and Linux
+- Automated changelog generation
+
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
