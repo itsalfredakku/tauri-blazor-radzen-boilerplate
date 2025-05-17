@@ -51,6 +51,20 @@ This will:
 - Build and run the Tauri application
 - Enable hot reloading for both frontend and backend changes
 
+### VS Code Development
+
+For the best development experience in VS Code:
+
+1. Open the repository in VS Code
+2. Make scripts executable:
+   ```bash
+   chmod +x scripts/*.sh
+   ```
+3. Use the integrated debugging features:
+   - **Debug Tauri Application**: F5 or Run → Start Debugging → "Tauri: Boilerplate Debug"
+   - **Debug Blazor Only**: Run → Start Debugging → "Blazor: Boilerplate Debug"
+   - **Attach to Running WebAssembly**: Run → Start Debugging → "Attach to Blazor WebAssembly"
+
 ### Build & Run
 
 This project includes optimized build scripts to speed up development and compilation:

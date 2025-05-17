@@ -1,0 +1,43 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Tauri: Boilerplate Debug",
+            "type": "node",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "program": "${workspaceFolder}/scripts/run-project.sh",
+            "runtimeExecutable": "zsh",
+            "runtimeArgs": [
+                "-c"
+            ],
+            "args": [
+                "./scripts/run-project.sh --verbose"
+            ],
+            "console": "integratedTerminal",
+            "preLaunchTask": "chmod-scripts",
+            "internalConsoleOptions": "openOnSessionStart"
+        },
+        {
+            "name": "Blazor: Boilerplate Debug",
+            "type": "dotnet",
+            "request": "launch",
+            "project": "${workspaceFolder}/src/TauriBlazorBoilerplate.csproj",
+            "launchBrowser": true,
+            "inspectUri": "{wsProtocol}://{url.hostname}:{url.port}/_framework/debug/ws-proxy?browser={browserInspectUri}",
+            "applicationUrl": "http://localhost:5432",
+            "environmentVariables": {
+                "ASPNETCORE_ENVIRONMENT": "Development"
+            }
+        },
+        {
+            "name": "Attach to Blazor WebAssembly",
+            "type": "blazorwasm",
+            "request": "attach",
+            "url": "http://localhost:5432"
+        }
+    ]
+}
