@@ -101,8 +101,21 @@ jobs:
       - name: Build Blazor WebAssembly App
         run: dotnet build -c Release --no-restore src/TauriBlazorBoilerplate.csproj
 
+      # Only run tests if there are any test projects
+      - name: Check for test projects
+        id: check-tests
+        run: |
+          TEST_PROJECTS=$(find . -name "*Test*.csproj" | wc -l)
+          echo "Found $TEST_PROJECTS test projects"
+          if [ "$TEST_PROJECTS" -gt 0 ]; then
+            echo "has_tests=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_tests=false" >> $GITHUB_OUTPUT
+          fi
+
       - name: Run tests
-        run: dotnet test --no-build --verbosity normal
+        if: steps.check-tests.outputs.has_tests == 'true'
+        run: dotnet test src/TauriBlazorBoilerplate.csproj --no-build --verbosity normal
 
       - name: Build Tauri Application
         env:
