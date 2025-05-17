@@ -3,26 +3,31 @@
 
 <RadzenStack class="rz-mt-4 rz-mb-4" Orientation="Orientation.Vertical" JustifyContent="JustifyContent.Center"
     AlignItems="AlignItems.Center">
-    <RadzenText Text="Tauri + Blazor" TextStyle="TextStyle.DisplayH1" class="rz-mb-0"
+    <RadzenText Text="Tauri + Blazor + Radzen" TextStyle="Radzen.Blazor.TextStyle.DisplayH3" class="rz-mb-0"
         style="color: var(--rz-sidebar-color);" />
-    <RadzenText Text="Boilerplate" TextStyle="TextStyle.H6" class="rz-mb-0" style="color: var(--rz-sidebar-color);" />
+    <RadzenText Text="A modern, lightweight desktop application boilerplate combining the power of Tauri, Blazor WebAssembly, and Radzen Components." class="rz-mb-0" style="color: var(--rz-sidebar-color); text-align: center" TextStyle="Radzen.Blazor.TextStyle.Subtitle1" />
 
     <RadzenRow class="rz-mt-4" JustifyContent="JustifyContent.Center" AlignItems="AlignItems.Center" Gap="1rem">
         <RadzenLink Path="https://tauri.app" Target="_blank">
             <RadzenImage Path="images/tauri.svg" class="logo tauri" alt="Tauri logo" Style="width: 48px; height: 48px;" />
         </RadzenLink>
+        <RadzenIcon Icon="add" />
         <RadzenLink Path="https://dotnet.microsoft.com/en-us/apps/aspnet/web-apps/blazor" Target="_blank">
             <RadzenImage Path="images/blazor.png" class="logo blazor" alt="Blazor logo" Style="width: 48px; height: 48px;" />
         </RadzenLink>
+        <RadzenIcon Icon="add" />
+        <RadzenLink Path="https://blazor.radzen.com/" Target="_blank">
+            <RadzenImage Path="images/radzen.png" class="logo radzen" alt="Radzen logo" Style="width: 48px; height: 48px;" />
+        </RadzenLink>
     </RadzenRow>
-    <RadzenText>Click on the Tauri and Blazor logos to learn more.</RadzenText>
+    <RadzenText>Click on the Tauri, Blazor, Radzen logos to learn more.</RadzenText>
 
     @* <form class="row" @onsubmit="GreetAsync" @onsubmit:preventDefault="true">
         <RadzenTextBox id="greet-input" Placeholder="Enter a name..." @bind-Value="GreetInput" />
         <RadzenButton type="submit">Greet</RadzenButton>
     </form> *@
 
-    <RadzenCard class="rz-my-4 rz-mx-auto" Style="max-width: 400px;">
+    <RadzenCard class="rz-my-4 rz-mx-auto" Style="max-width: 600px; min-width: 400px">
         <RadzenText TextStyle="TextStyle.H6" class="rz-mb-3">Try the Tauri-Blazor bridge</RadzenText>
         <RadzenStack>
             <RadzenTextBox id="greet-input" Placeholder="Enter your name..." @bind-Value="GreetInput" />
