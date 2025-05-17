@@ -102,8 +102,10 @@ jobs:
         run: dotnet build -c Release --no-restore src/TauriBlazorBoilerplate.csproj
 
       # Only run tests if there are any test projects
-      - name: Check for test projects
-        id: check-tests
+      - name: Check for test projects (Unix)
+        id: check-tests-unix
+        if: runner.os != 'Windows'
+        shell: bash
         run: |
           TEST_PROJECTS=$(find . -name "*Test*.csproj" | wc -l)
           echo "Found $TEST_PROJECTS test projects"
@@ -112,9 +114,22 @@ jobs:
           else
             echo "has_tests=false" >> $GITHUB_OUTPUT
           fi
+      
+      - name: Check for test projects (Windows)
+        id: check-tests-windows
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $TestProjects = (Get-ChildItem -Path . -Recurse -Filter "*Test*.csproj" | Measure-Object).Count
+          Write-Host "Found $TestProjects test projects"
+          if ($TestProjects -gt 0) {
+            echo "has_tests=true" >> $env:GITHUB_OUTPUT
+          } else {
+            echo "has_tests=false" >> $env:GITHUB_OUTPUT
+          }
 
       - name: Run tests
-        if: steps.check-tests.outputs.has_tests == 'true'
+        if: (steps.check-tests-unix.outputs.has_tests == 'true' && runner.os != 'Windows') || (steps.check-tests-windows.outputs.has_tests == 'true' && runner.os == 'Windows')
         run: dotnet test src/TauriBlazorBoilerplate.csproj --no-build --verbosity normal
 
       - name: Build Tauri Application

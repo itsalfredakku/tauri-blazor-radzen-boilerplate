@@ -55,7 +55,9 @@ jobs:
             ${{ runner.os }}-rust-
       
       # Set optimized environment variables for faster compilation
-      - name: Set Rust env vars
+      - name: Set Rust env vars (Unix)
+        if: runner.os != 'Windows'
+        shell: bash
         run: |
           echo "CARGO_INCREMENTAL=0" >> $GITHUB_ENV
           echo "CARGO_NET_RETRY=10" >> $GITHUB_ENV
@@ -65,6 +67,19 @@ jobs:
           echo "CARGO_PROFILE_DEV_SPLIT_DEBUGINFO=unpacked" >> $GITHUB_ENV
           # Use parallel compilation based on available cores - this is a good default for CI
           echo "CARGO_BUILD_JOBS=4" >> $GITHUB_ENV
+          
+      - name: Set Rust env vars (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          echo "CARGO_INCREMENTAL=0" >> $env:GITHUB_ENV
+          echo "CARGO_NET_RETRY=10" >> $env:GITHUB_ENV
+          echo "RUSTUP_MAX_RETRIES=10" >> $env:GITHUB_ENV
+          echo "CARGO_TERM_COLOR=always" >> $env:GITHUB_ENV
+          echo "CARGO_PROFILE_DEV_DEBUG=0" >> $env:GITHUB_ENV
+          echo "CARGO_PROFILE_DEV_SPLIT_DEBUGINFO=unpacked" >> $env:GITHUB_ENV
+          # Use parallel compilation based on available cores - this is a good default for CI
+          echo "CARGO_BUILD_JOBS=4" >> $env:GITHUB_ENV
 
       # Check cargo version to confirm setup
       - name: Cargo version

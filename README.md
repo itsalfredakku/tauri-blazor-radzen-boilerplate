@@ -1,6 +1,6 @@
 # Tauri + Blazor + Radzen - Boilerplate
 
-<p align="center mb-4">
+<p align="center" style="margin-bottom: 30px;">
   <img src="src/wwwroot/images/tauri.svg" alt="Tauri" width="150" />
   &nbsp;&nbsp;&nbsp;&nbsp;
   <img src="src/wwwroot/images/blazor.png" alt="Blazor" width="150" /> 
