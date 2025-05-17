@@ -26,7 +26,7 @@ on:
 
 jobs:
   setup-rust:
-    runs-on: ${{ inputs.platform || github.job_runner_context }}
+    runs-on: ${{ inputs.platform || 'ubuntu-latest' }}
     defaults:
       run:
         working-directory: ${{ inputs.working-directory }}

@@ -134,8 +134,8 @@ jobs:
       - name: Install app dependencies
         if: steps.cache-tauri-cli.outputs.cache-hit != 'true'
         run: |
-          # Using --force to ensure proper installation and --debug=false to speed up
-          cargo install tauri-cli --locked --force --debug=false
+          # Using --force to ensure proper installation
+          cargo install tauri-cli --locked --force
 
       - name: Build Blazor App
         shell: bash
