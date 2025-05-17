@@ -1,0 +1,233 @@
+@page "/tauri-examples"
+@inject IJSRuntime JsRuntime
+
+<RadzenStack class="rz-mt-4 rz-mb-4" Orientation="Orientation.Vertical">
+    <RadzenText Text="Tauri API Examples" TextStyle="TextStyle.DisplayH2" class="rz-mb-4"
+        style="color: var(--rz-sidebar-color);" />
+    
+    <RadzenText>
+        This page demonstrates various Tauri API capabilities. Click on the buttons below to interact with native features.
+    </RadzenText>
+
+    <RadzenCard class="rz-my-4">
+        <RadzenText TextStyle="TextStyle.H5">Dialog Examples</RadzenText>
+        <RadzenText class="rz-mb-3">
+            Tauri provides native dialog UI elements that can be used from your Blazor application.
+        </RadzenText>
+        
+        <RadzenRow>
+            <RadzenColumn Size="12" SizeMD="6" Class="rz-mb-2">
+                <RadzenButton Text="Show Message" Icon="message" Click="@ShowMessageDialog" ButtonStyle="ButtonStyle.Secondary" />
+            </RadzenColumn>
+            <RadzenColumn Size="12" SizeMD="6" Class="rz-mb-2">
+                <RadzenButton Text="Ask Question" Icon="help" Click="@ShowConfirmDialog" ButtonStyle="ButtonStyle.Secondary" />
+            </RadzenColumn>
+        </RadzenRow>
+    </RadzenCard>
+
+    <RadzenCard class="rz-my-4">
+        <RadzenText TextStyle="TextStyle.H5">File System</RadzenText>
+        <RadzenText class="rz-mb-3">
+            Access the file system safely with Tauri.
+        </RadzenText>
+        
+        <RadzenRow>
+            <RadzenColumn Size="12" SizeMD="6" Class="rz-mb-2">
+                <RadzenButton Text="Pick a File" Icon="folder_open" Click="@PickFile" ButtonStyle="ButtonStyle.Info" />
+            </RadzenColumn>
+            <RadzenColumn Size="12" SizeMD="6" Class="rz-mb-2">
+                <RadzenButton Text="Save a File" Icon="save" Click="@SaveFile" ButtonStyle="ButtonStyle.Info" />
+            </RadzenColumn>
+        </RadzenRow>
+        
+        <RadzenText class="rz-mt-3">@FileSystemResult</RadzenText>
+    </RadzenCard>
+
+    <RadzenCard class="rz-my-4">
+        <RadzenText TextStyle="TextStyle.H5">System Information</RadzenText>
+        <RadzenText class="rz-mb-3">
+            Get information about the system where your app is running.
+        </RadzenText>
+        
+        <RadzenButton Text="Get System Info" Icon="computer" Click="@GetSystemInfo" ButtonStyle="ButtonStyle.Primary" class="rz-mb-3" />
+        
+        @if (!string.IsNullOrEmpty(SystemInfo))
+        {
+            <RadzenCard Style="background-color: var(--rz-base-100);">
+                <pre>@SystemInfo</pre>
+            </RadzenCard>
+        }
+    </RadzenCard>
+
+    <RadzenCard class="rz-my-4">
+        <RadzenText TextStyle="TextStyle.H5">Window Management</RadzenText>
+        <RadzenText class="rz-mb-3">
+            Control the application window using Tauri window APIs.
+        </RadzenText>
+        
+        <RadzenStack Orientation="Orientation.Horizontal" Gap="1rem" JustifyContent="JustifyContent.Start" class="rz-p-2">
+            <RadzenButton Text="Minimize" Icon="minimize" Click="@MinimizeWindow" ButtonStyle="ButtonStyle.Secondary" />
+            <RadzenButton Text="Maximize" Icon="open_in_full" Click="@MaximizeWindow" ButtonStyle="ButtonStyle.Secondary" />
+            <RadzenButton Text="Unmaximize" Icon="close_fullscreen" Click="@UnmaximizeWindow" ButtonStyle="ButtonStyle.Secondary" />
+            <RadzenButton Text="Center" Icon="center_focus_weak" Click="@CenterWindow" ButtonStyle="ButtonStyle.Secondary" />
+        </RadzenStack>
+    </RadzenCard>
+</RadzenStack>
+
+@code {
+    private string? DialogResult { get; set; }
+    private string? FileSystemResult { get; set; }
+    private string? SystemInfo { get; set; }
+
+    private async Task ShowMessageDialog()
+    {
+        await JsRuntime.InvokeVoidAsync("eval", @"
+            if (window.__TAURI__) {
+                window.__TAURI__.dialog.message('This is a native Tauri message dialog!', { title: 'Tauri + Blazor' });
+            } else {
+                alert('Tauri is not available. This would show a native dialog.');
+            }
+        ");
+    }
+
+    private async Task ShowConfirmDialog()
+    {
+        await JsRuntime.InvokeVoidAsync("eval", @"
+            if (window.__TAURI__) {
+                window.__TAURI__.dialog.confirm('Do you like using Tauri with Blazor?', { title: 'Important Question', type: 'warning' })
+                    .then((result) => {
+                        window.__TAURI__.dialog.message('Your answer was: ' + (result ? 'Yes!' : 'No'), { title: 'Result' });
+                    });
+            } else {
+                const result = confirm('Do you like using Tauri with Blazor?');
+                alert('Your answer was: ' + (result ? 'Yes!' : 'No'));
+            }
+        ");
+    }
+
+    private async Task PickFile()
+    {
+        try
+        {
+            var result = await JsRuntime.InvokeAsync<string>("eval", @"
+                if (window.__TAURI__) {
+                    return window.__TAURI__.dialog.open({ multiple: false, directory: false })
+                        .then(result => result ? 'Selected file: ' + result : 'No file selected')
+                        .catch(err => 'Error: ' + err);
+                } else {
+                    return 'Tauri is not available. This would open a native file picker dialog.';
+                }
+            ");
+            
+            FileSystemResult = result;
+        }
+        catch (Exception ex)
+        {
+            FileSystemResult = $"Error: {ex.Message}";
+        }
+    }
+
+    private async Task SaveFile()
+    {
+        try
+        {
+            var result = await JsRuntime.InvokeAsync<string>("eval", @"
+                if (window.__TAURI__) {
+                    return window.__TAURI__.dialog.save({ defaultPath: 'example.txt' })
+                        .then(result => result ? 'File save path: ' + result : 'Save cancelled')
+                        .catch(err => 'Error: ' + err);
+                } else {
+                    return 'Tauri is not available. This would open a native file save dialog.';
+                }
+            ");
+            
+            FileSystemResult = result;
+        }
+        catch (Exception ex)
+        {
+            FileSystemResult = $"Error: {ex.Message}";
+        }
+    }
+
+    private async Task GetSystemInfo()
+    {
+        try
+        {
+            var info = await JsRuntime.InvokeAsync<string>("eval", @"
+                if (window.__TAURI__) {
+                    const promises = [
+                        window.__TAURI__.os.platform(),
+                        window.__TAURI__.os.version(),
+                        window.__TAURI__.os.type(),
+                        window.__TAURI__.app.getName(),
+                        window.__TAURI__.app.getVersion()
+                    ];
+                    
+                    return Promise.all(promises)
+                        .then(([platform, version, osType, appName, appVersion]) => {
+                            return JSON.stringify({
+                                platform,
+                                version,
+                                osType,
+                                appName,
+                                appVersion
+                            }, null, 2);
+                        })
+                        .catch(err => 'Error fetching system info: ' + err);
+                } else {
+                    return 'Tauri is not available. System information would be shown here.';
+                }
+            ");
+            
+            SystemInfo = info;
+        }
+        catch (Exception ex)
+        {
+            SystemInfo = $"Error: {ex.Message}";
+        }
+    }
+
+    private async Task MinimizeWindow()
+    {
+        await JsRuntime.InvokeVoidAsync("eval", @"
+            if (window.__TAURI__) {
+                window.__TAURI__.window.getCurrent().minimize();
+            } else {
+                console.log('Tauri is not available. This would minimize the window.');
+            }
+        ");
+    }
+
+    private async Task MaximizeWindow()
+    {
+        await JsRuntime.InvokeVoidAsync("eval", @"
+            if (window.__TAURI__) {
+                window.__TAURI__.window.getCurrent().maximize();
+            } else {
+                console.log('Tauri is not available. This would maximize the window.');
+            }
+        ");
+    }
+
+    private async Task UnmaximizeWindow()
+    {
+        await JsRuntime.InvokeVoidAsync("eval", @"
+            if (window.__TAURI__) {
+                window.__TAURI__.window.getCurrent().unmaximize();
+            } else {
+                console.log('Tauri is not available. This would unmaximize the window.');
+            }
+        ");
+    }
+
+    private async Task CenterWindow()
+    {
+        await JsRuntime.InvokeVoidAsync("eval", @"
+            if (window.__TAURI__) {
+                window.__TAURI__.window.getCurrent().center();
+            } else {
+                console.log('Tauri is not available. This would center the window.');
+            }
+        ");
+    }
+}

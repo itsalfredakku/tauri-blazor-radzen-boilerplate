@@ -1,0 +1,118 @@
+@page "/about"
+@inject IJSRuntime JsRuntime
+
+<RadzenStack class="rz-mt-4 rz-mb-4" Orientation="Orientation.Vertical">
+    <RadzenText Text="About This Boilerplate" TextStyle="TextStyle.DisplayH2" class="rz-mb-4"
+        style="color: var(--rz-sidebar-color);" />
+
+    <RadzenCard class="rz-mb-4">
+        <RadzenText TextStyle="TextStyle.H5">Tauri + Blazor Boilerplate</RadzenText>
+        <RadzenText>
+            This boilerplate combines the power of Tauri for creating lightweight, secure desktop applications with Blazor for a 
+            component-based web UI framework that uses C# instead of JavaScript.
+        </RadzenText>
+        
+        <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Start" Gap="1rem" class="rz-mt-4">
+            <RadzenBadge BadgeStyle="BadgeStyle.Secondary" >
+                Version: @Version
+            </RadzenBadge>
+            <RadzenBadge BadgeStyle="BadgeStyle.Info" Text=".NET 8" />
+            <RadzenBadge BadgeStyle="BadgeStyle.Success" Text="Tauri" />
+        </RadzenStack>
+    </RadzenCard>
+
+    <RadzenRow>
+        <RadzenColumn Size="12" SizeMD="6" class="rz-mb-4">
+            <RadzenCard>
+                <RadzenText TextStyle="TextStyle.H6">Tauri Features</RadzenText>
+                <RadzenTree Change=@OnTreeChange Expand=@OnTreeExpand Collapse=@OnTreeCollapse>
+                    <RadzenTreeItem Text="Smaller bundle size compared to Electron" />
+                    <RadzenTreeItem Text="Improved security with system webview" />
+                    <RadzenTreeItem Text="Multi-platform support" />
+                    <RadzenTreeItem Text="Native system dialogs and menus" />
+                </RadzenTree>
+            </RadzenCard>
+        </RadzenColumn>
+
+        <RadzenColumn Size="12" SizeMD="6" class="rz-mb-4">
+            <RadzenCard>
+                <RadzenText TextStyle="TextStyle.H6">Blazor Features</RadzenText>
+                <RadzenTree Change=@OnTreeChange Expand=@OnTreeExpand Collapse=@OnTreeCollapse>
+                    <RadzenTreeItem Text="Write UI in C# instead of JavaScript" />
+                    <RadzenTreeItem Text="Component-based architecture" />
+                    <RadzenTreeItem Text="WebAssembly performance" />
+                    <RadzenTreeItem Text="Full .NET ecosystem access" />
+                </RadzenTree>
+            </RadzenCard>
+        </RadzenColumn>
+    </RadzenRow>
+
+    <RadzenCard class="rz-mb-4">
+        <RadzenText TextStyle="TextStyle.H6">Environment Info</RadzenText>
+        <RadzenButton Text="Check Tauri Version" Click="@CheckTauriVersion" class="rz-mb-3" />
+        <RadzenText>@TauriVersionInfo</RadzenText>
+    </RadzenCard>
+
+    <RadzenCard>
+        <RadzenText TextStyle="TextStyle.H6">Resources</RadzenText>
+        <RadzenRow>
+            <RadzenColumn Size="12" SizeMD="4" class="rz-mb-2">
+                <RadzenLink Path="https://tauri.app/docs" Target="_blank" Text="Tauri Documentation" />
+            </RadzenColumn>
+            <RadzenColumn Size="12" SizeMD="4" class="rz-mb-2">
+                <RadzenLink Path="https://learn.microsoft.com/en-us/aspnet/core/blazor" Target="_blank" Text="Blazor Documentation" />
+            </RadzenColumn>
+            <RadzenColumn Size="12" SizeMD="4" class="rz-mb-2">
+                <RadzenLink Path="https://radzen.com/blazor-components" Target="_blank" Text="Radzen Components" />
+            </RadzenColumn>
+        </RadzenRow>
+    </RadzenCard>
+</RadzenStack>
+
+@code {
+    private string? TauriVersionInfo { get; set; }
+    
+    private string Version { get; set; } = "1.0.0";
+
+    protected override void OnInitialized()
+    {
+        // In a real app, you could load this from a configuration file or environment variable
+        Version = "1.0.0";
+    }
+    
+    void OnTreeChange(TreeEventArgs args)
+    {
+        // Handle tree item selection here if needed
+        // Console.WriteLine($"Selected: {args.Text}");
+    }
+
+    void OnTreeExpand(TreeExpandEventArgs args)
+    {
+        // Handle tree item expansion here if needed
+        // Console.WriteLine($"Expanded: {args.Text}");
+    }
+
+    void OnTreeCollapse(TreeEventArgs args)
+    {
+        // Handle tree item collapse here if needed
+        // Console.WriteLine($"Collapsed: {args.Text}");
+    }
+
+    private async Task CheckTauriVersion()
+    {
+        try
+        {
+            var version = await JsRuntime.InvokeAsync<string>("eval", @"
+                const tauriVersion = window.__TAURI__ ? 'Tauri is available' : 'Tauri is not available';
+                const appVersion = window.__TAURI__ ? window.__TAURI_METADATA__?.version || 'Unknown' : 'N/A';
+                `Tauri Status: ${tauriVersion}\nApp Version: ${appVersion}`;
+            ");
+            
+            TauriVersionInfo = version;
+        }
+        catch (Exception ex)
+        {
+            TauriVersionInfo = $"Error checking Tauri version: {ex.Message}";
+        }
+    }
+}

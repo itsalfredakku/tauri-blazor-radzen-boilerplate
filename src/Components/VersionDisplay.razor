@@ -1,0 +1,42 @@
+@namespace TauriBlazorBoilerplate.Components
+@inject VersionService VersionService
+@implements IDisposable
+
+<RadzenStack AlignItems="Radzen.AlignItems.Center" Gap="0" class="rz-pt-2">
+    <RadzenText Text="@($"{_versionInfo.ProductName} v{_versionInfo.Version}")" 
+                TextStyle="Radzen.Blazor.TextStyle.Caption" 
+                TagName="Radzen.Blazor.TagName.P" 
+                TextAlign="Radzen.TextAlign.Center" />
+    <RadzenText Text="@_versionInfo.Copyright" 
+                TextStyle="Radzen.Blazor.TextStyle.Caption" 
+                class="rz-mb-0" 
+                TagName="Radzen.Blazor.TagName.P" 
+                TextAlign="Radzen.TextAlign.Center" />
+</RadzenStack>
+
+@code {
+    private VersionInfo _versionInfo = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadVersionInfo();
+        VersionService.OnVersionInfoLoaded += OnVersionInfoLoaded;
+    }
+
+    private async Task LoadVersionInfo()
+    {
+        _versionInfo = VersionService.GetVersionInfo();
+        await VersionService.LoadVersionInfoAsync();
+    }
+
+    private void OnVersionInfoLoaded()
+    {
+        _versionInfo = VersionService.GetVersionInfo();
+        InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        VersionService.OnVersionInfoLoaded -= OnVersionInfoLoaded;
+    }
+}

@@ -1,0 +1,29 @@
+@namespace TauriBlazorBoilerplate.Components
+@using Microsoft.AspNetCore.Components
+
+<CascadingValue Value="this">
+    @ChildContent
+</CascadingValue>
+
+@code {
+    [Parameter]
+    public required RenderFragment ChildContent { get; set; }
+
+    [Parameter]
+    public EventCallback<Exception> OnError { get; set; }
+
+    [Parameter]
+    public bool LogErrors { get; set; } = true;
+
+    public async Task HandleErrorAsync(Exception ex)
+    {
+        if (LogErrors)
+        {
+            // Log the error (in a real app, you might want to use a proper logging service)
+            Console.Error.WriteLine($"Error: {ex.Message}");
+            Console.Error.WriteLine(ex.StackTrace);
+        }
+
+        await OnError.InvokeAsync(ex);
+    }
+}

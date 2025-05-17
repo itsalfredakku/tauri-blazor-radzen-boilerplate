@@ -1,0 +1,63 @@
+@page "/"
+@inject IJSRuntime JsRuntime
+
+<RadzenStack class="rz-mt-4 rz-mb-4" Orientation="Orientation.Vertical" JustifyContent="JustifyContent.Center"
+    AlignItems="AlignItems.Center">
+    <RadzenText Text="Tauri + Blazor" TextStyle="TextStyle.DisplayH1" class="rz-mb-0"
+        style="color: var(--rz-sidebar-color);" />
+    <RadzenText Text="Boilerplate" TextStyle="TextStyle.H6" class="rz-mb-0" style="color: var(--rz-sidebar-color);" />
+
+    <RadzenRow class="rz-mt-4" JustifyContent="JustifyContent.Center" AlignItems="AlignItems.Center" Gap="1rem">
+        <RadzenLink Path="https://tauri.app" Target="_blank">
+            <RadzenImage Path="images/tauri.svg" class="logo tauri" alt="Tauri logo" Style="width: 48px; height: 48px;" />
+        </RadzenLink>
+        <RadzenLink Path="https://dotnet.microsoft.com/en-us/apps/aspnet/web-apps/blazor" Target="_blank">
+            <RadzenImage Path="images/blazor.png" class="logo blazor" alt="Blazor logo" Style="width: 48px; height: 48px;" />
+        </RadzenLink>
+    </RadzenRow>
+    <RadzenText>Click on the Tauri and Blazor logos to learn more.</RadzenText>
+
+    @* <form class="row" @onsubmit="GreetAsync" @onsubmit:preventDefault="true">
+        <RadzenTextBox id="greet-input" Placeholder="Enter a name..." @bind-Value="GreetInput" />
+        <RadzenButton type="submit">Greet</RadzenButton>
+    </form> *@
+
+    <RadzenCard class="rz-my-4 rz-mx-auto" Style="max-width: 400px;">
+        <RadzenText TextStyle="TextStyle.H6" class="rz-mb-3">Try the Tauri-Blazor bridge</RadzenText>
+        <RadzenStack>
+            <RadzenTextBox id="greet-input" Placeholder="Enter your name..." @bind-Value="GreetInput" />
+            <RadzenButton ButtonStyle="ButtonStyle.Primary" Text="Greet" Click="@GreetAsync" />
+            <RadzenText>@GreetMsg</RadzenText>
+        </RadzenStack>
+    </RadzenCard>
+</RadzenStack>
+
+@code
+{
+    private string? GreetInput { get; set; }
+
+    private string? GreetMsg { get; set; }
+
+    private async Task GreetAsync()
+    {
+        if (string.IsNullOrWhiteSpace(GreetInput))
+        {
+            GreetMsg = "Please enter your name first.";
+            return;
+        }
+        
+        try
+        {
+            GreetMsg = await JsRuntime.InvokeAsync<string>("__TAURI__.core.invoke", "greet", new { name = GreetInput });
+        }
+        catch (Exception ex)
+        {
+            GreetMsg = $"Error: {ex.Message}";
+        }
+    }
+
+    protected System.Threading.Tasks.Task Button0Click(Microsoft.AspNetCore.Components.Web.MouseEventArgs args)
+    {
+        return Task.CompletedTask;
+    }
+}
