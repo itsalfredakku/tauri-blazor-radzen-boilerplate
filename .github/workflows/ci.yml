@@ -6,6 +6,11 @@ on:
   pull_request:
     branches: [ main ]
 
+# Cancel in-progress workflow runs on the same branch
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     strategy:
@@ -25,14 +30,37 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: ${{ matrix.dotnet }}
+          
+      # Cache NuGet packages
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json', '**/TauriBlazorBoilerplate.csproj') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 'lts/*'
+          cache: 'npm'
+          cache-dependency-path: '**/package-lock.json'
 
       - name: Install Rust stable
         uses: dtolnay/rust-toolchain@stable
+        
+      # Cache Rust dependencies
+      - name: Cache Rust dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            src-tauri/target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-
         
       - name: Install dependencies (ubuntu only)
         if: matrix.platform == 'ubuntu-latest'
@@ -52,10 +80,19 @@ jobs:
             exit 1
           fi
           echo "Using WebKitGTK package: $WEBKIT_DEV_PACKAGE"
-          sudo apt-get install -y libgtk-3-dev $WEBKIT_DEV_PACKAGE libappindicator3-dev librsvg2-dev patchelf
+          sudo apt-get install -y --no-install-recommends libgtk-3-dev $WEBKIT_DEV_PACKAGE libappindicator3-dev librsvg2-dev patchelf
 
+      # Cache Tauri CLI installation
+      - name: Cache Tauri CLI
+        id: cache-tauri-cli
+        uses: actions/cache@v4
+        with:
+          path: ~/.cargo/bin/cargo-tauri
+          key: ${{ runner.os }}-cargo-tauri-cli
+          
       - name: Install Tauri CLI
-        run: cargo install tauri-cli
+        if: steps.cache-tauri-cli.outputs.cache-hit != 'true'
+        run: cargo install tauri-cli --locked
 
       - name: Restore dependencies
         run: dotnet restore
@@ -67,4 +104,8 @@ jobs:
         run: dotnet test --no-build --verbosity normal
 
       - name: Build Tauri Application
-        run: cargo tauri build --ci
+        run: |
+          # Set environment variable to skip dev dependencies
+          export CARGO_PROFILE_DEV_BUILD_OVERRIDE_DEBUG=false
+          export CARGO_PROFILE_DEV_DEBUG=0
+          cargo tauri build --ci
