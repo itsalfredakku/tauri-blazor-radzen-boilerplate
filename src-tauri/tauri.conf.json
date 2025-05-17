@@ -5,7 +5,7 @@
   "identifier": "com.tauri-blazor-boilerplate.app",
   "build": {
     "beforeDevCommand": "dotnet watch run --project src/TauriBlazorBoilerplate.csproj",
-    "devUrl": "http://localhost:1420",
+    "devUrl": "http://localhost:5432",
     "beforeBuildCommand": "dotnet publish -c release src/TauriBlazorBoilerplate.csproj -o dist",
     "frontendDist": "../dist/wwwroot"
   },
