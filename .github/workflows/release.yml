@@ -33,11 +33,6 @@ jobs:
         with:
           fetch-depth: 0
       
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 'lts/*'
-          
       - name: Get version
         id: get_version
         run: echo "version=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT

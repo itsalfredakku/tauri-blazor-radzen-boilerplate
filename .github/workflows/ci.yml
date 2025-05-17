@@ -40,11 +40,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-nuget-
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 'lts/*'
-
       - name: Install Rust stable
         uses: dtolnay/rust-toolchain@stable
         with:

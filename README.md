@@ -8,17 +8,90 @@
   <img src="src/wwwroot/images/radzen.png" alt="Radzen" width="150" />
 </p>
 
-A modern, lightweight desktop application boilerplate combining the power of [Tauri](https://tauri.app/), [Blazor WebAssembly](https://dotnet.microsoft.com/apps/aspnet/web-apps/blazor), and [Radzen](https://blazor.radzen.com/).
+A modern, lightweight application boilerplate combining the power of [Tauri](https://tauri.app/), [Blazor WebAssembly](https://dotnet.microsoft.com/apps/aspnet/web-apps/blazor), and [Radzen](https://blazor.radzen.com/) for desktop, web, and mobile platforms.
+
+## Table of Contents
+
+- [Features](#features)
+- [Project Structure](#project-structure)
+- [Getting Started](#getting-started)
+  - [Prerequisites](#prerequisites)
+  - [Development Setup](#development-setup)
+  - [VS Code Integration](#vs-code-integration)
+- [Building](#building)
+  - [Development Builds](#development-builds)
+  - [Production Builds](#production-builds)
+  - [Platform-Specific Builds](#platform-specific-builds)
+    - [macOS Universal Binary](#macos-universal-binary)
+    - [Android](#android)
+    - [iOS](#ios)
+- [Advanced Features](#advanced-features)
+  - [Theme Management](#theme-management)
+  - [Tauri API Examples](#tauri-api-examples)
+  - [Error Handling](#error-handling)
+  - [Loading Indicators](#loading-indicators)
+  - [Responsive Design](#responsive-design)
+- [Performance Optimizations](#performance-optimizations)
+- [CI/CD](#cicd)
+- [Contributing](#contributing)
+- [License](#license)
+- [Acknowledgments](#acknowledgments)
 
 ## Features
 
 - **Lightweight Desktop Framework**: Tauri offers much smaller bundle sizes compared to Electron
 - **Blazor WebAssembly**: Build interactive web UIs with C# instead of JavaScript
+- **No Node.js Required**: Pure .NET and Rust stack without JavaScript toolchain dependencies
 - **Secure by Default**: Harnesses Tauri's security-focused architecture
-- **Cross-Platform**: Works on Windows, macOS, and Linux
+- **Cross-Platform**: Works on Windows, macOS, Linux, Android, and iOS
 - **Radzen Components**: Beautiful UI components from Radzen
 - **Material 3 Design**: Modern design system with light/dark mode support
 - **Built with .NET 9.0**: Leverages the latest .NET features
+
+## Project Structure
+
+The project is organized as follows:
+
+```
+/
+├── .cargo/                # Cargo configuration
+├── .github/               # GitHub workflows for CI/CD
+│   └── workflows/         # CI, release, and changelog automation
+├── .vscode/               # VS Code configuration
+│   ├── launch.json        # Debug configurations
+│   ├── tasks.json         # Build tasks
+│   ├── settings.json      # Editor settings
+│   └── extensions.json    # Recommended extensions
+├── docs/                  # Documentation files
+├── scripts/               # Build and utility scripts
+│   ├── build-macos-universal.sh    # macOS universal binary build script
+│   ├── fast-build.sh               # Optimized build script
+│   ├── optimize-rust.sh            # Rust optimization script
+│   └── run-project.sh              # Development runner
+├── src/                   # Blazor WebAssembly application
+│   ├── Components/        # Reusable Blazor components
+│   ├── Layout/            # Application layout components
+│   ├── Pages/             # Application pages
+│   ├── Properties/        # .NET project properties
+│   ├── Services/          # Application services
+│   ├── wwwroot/           # Static web assets
+│   │   ├── css/           # Stylesheets including Material 3
+│   │   ├── fonts/         # Application fonts
+│   │   └── images/        # Images and icons
+│   ├── App.razor          # Root Blazor component
+│   ├── Program.cs         # Application entry point
+│   └── TauriBlazorBoilerplate.csproj  # .NET project file
+└── src-tauri/             # Tauri native application
+    ├── capabilities/      # Tauri capabilities configuration
+    ├── icons/             # Application icons
+    ├── src/               # Rust source code
+    │   ├── lib.rs         # Core functionality
+    │   └── main.rs        # Native application entry point
+    ├── build.rs           # Tauri build script
+    ├── Cargo.toml         # Rust dependencies
+    ├── rust-toolchain.toml # Rust toolchain specification
+    └── tauri.conf.json    # Tauri configuration
+```
 
 ## Getting Started
 
@@ -26,8 +99,10 @@ A modern, lightweight desktop application boilerplate combining the power of [Ta
 
 - [.NET 9.0 SDK](https://dotnet.microsoft.com/download/dotnet/9.0)
 - [Rust](https://www.rust-lang.org/tools/install)
-- [Node.js](https://nodejs.org/) (for NPM)
 - [Tauri Prerequisites](https://tauri.app/v1/guides/getting-started/prerequisites) for your platform
+- For mobile development:
+  - [Android Studio](https://developer.android.com/studio) (for Android)
+  - [Xcode](https://developer.apple.com/xcode/) (for iOS, macOS only)
 
 ### Development Setup
 
@@ -44,42 +119,81 @@ cd tauri-blazor-boilerplate
 cargo install tauri-cli
 ```
 
-3. Install Rust targets (for cross-compilation or macOS universal builds):
+3. Install Rust targets (for cross-compilation or platform-specific builds):
 
 ```bash
 # For macOS universal builds
 rustup target add x86_64-apple-darwin aarch64-apple-darwin
 
-# For other platforms if needed
+# For Android (arm64 and x86_64)
+rustup target add aarch64-linux-android x86_64-linux-android
+
+# For iOS (arm64)
+rustup target add aarch64-apple-ios
+
+# For standard platforms if needed
 rustup target add x86_64-unknown-linux-gnu
 rustup target add x86_64-pc-windows-msvc
 ```
 
-4. Run the development server:
+4. Make scripts executable:
+
+```bash
+chmod +x scripts/*.sh
+```
+
+5. Run the development server:
 
 ```bash
 cargo tauri dev
 ```
 
-## Building for Release
+### VS Code Integration
 
-### Standard Release Build
+This project includes VS Code configurations for optimal development:
+
+- **Tasks**: Press `Ctrl+Shift+B` (Windows/Linux) or `Cmd+Shift+B` (macOS) to access build tasks
+  - `fast-build`: Quick development build
+  - `fast-build-release`: Optimized release build
+  - `build-macos-universal`: Universal macOS binary build
+  - `fast-build-universal`: Quick universal macOS build
+
+- **Debugging**: Press `F5` to start debugging or use the Run panel
+  - `Tauri: Boilerplate Debug`: Debug full application
+  - `Blazor: Boilerplate Debug`: Debug only Blazor WebAssembly
+  - `Attach to Blazor WebAssembly`: Attach to running WebAssembly
+
+## Building
+
+### Development Builds
+
+For quick iteration during development:
 
 ```bash
-# Build for release (all platforms)
+# Start the development server with hot reloading
+cargo tauri dev
+
+# Fast build with development optimizations
+./scripts/fast-build.sh
+```
+
+### Production Builds
+
+Build production-ready applications:
+
+```bash
+# Standard production build
 cargo tauri build
+
+# Optimized release build with our script
+./scripts/fast-build.sh --release
 ```
 
-### macOS Universal Binary
+### Platform-Specific Builds
 
-For creating macOS universal binaries (works on both Intel and Apple Silicon):
+#### macOS Universal Binary
 
-```bash
-# Build a universal macOS binary (Apple Silicon + Intel)
-cargo tauri build --target universal-apple-darwin
-```
-
-Or use our helper script:
+Create a universal binary compatible with both Intel and Apple Silicon Macs:
 
 ```bash
 # Using the dedicated script
@@ -87,133 +201,121 @@ Or use our helper script:
 
 # Or using the fast-build script with universal flag
 ./scripts/fast-build.sh --universal --release
+
+# Or directly with cargo
+cargo tauri build --target universal-apple-darwin
 ```
 
-For more information on macOS universal builds, see [MACOS_UNIVERSAL_BUILDS.md](docs/MACOS_UNIVERSAL_BUILDS.md).
+For more information, see [MACOS_UNIVERSAL_BUILDS.md](docs/MACOS_UNIVERSAL_BUILDS.md).
 
-This will:
-- Start the Blazor WebAssembly development server
-- Build and run the Tauri application
-- Enable hot reloading for both frontend and backend changes
+#### Android
 
-### VS Code Development
+To build for Android:
 
-For the best development experience in VS Code:
-
-1. Open the repository in VS Code
-2. Make scripts executable:
+1. Install Android prerequisites:
    ```bash
-   chmod +x scripts/*.sh
+   # Install Android SDK and NDK via Android Studio
+
+   # Set environment variables (add to your shell profile)
+   export ANDROID_HOME=/path/to/android/sdk
+   export NDK_HOME=$ANDROID_HOME/ndk/[version]
    ```
-3. Use the integrated debugging features:
-   - **Debug Tauri Application**: F5 or Run → Start Debugging → "Tauri: Boilerplate Debug"
-   - **Debug Blazor Only**: Run → Start Debugging → "Blazor: Boilerplate Debug"
-   - **Attach to Running WebAssembly**: Run → Start Debugging → "Attach to Blazor WebAssembly"
 
-### Build & Run
+2. Install Tauri Android CLI tools:
+   ```bash
+   cargo install tauri-cli --features android
+   cargo install cargo-ndk
+   ```
 
-This project includes optimized build scripts to speed up development and compilation:
+3. Add Android-specific configuration to `tauri.conf.json`:
+   ```bash
+   # Execute from project root
+   cargo tauri android init
+   ```
 
-```bash
-# Run the optimized build script
-./scripts/fast-build.sh
+4. Build for Android:
+   ```bash
+   # Development build
+   cargo tauri android dev
 
-# For release build
-./scripts/fast-build.sh --release
+   # Production build
+   cargo tauri android build
+   ```
 
-# Clean and rebuild everything
-./scripts/fast-build.sh --clean --release
-```
+The APK will be generated in `src-tauri/gen/android/app/build/outputs/apk/`.
 
-### Development
+#### iOS
 
-```bash
-# Start in development mode
-cargo tauri dev
-```
+To build for iOS (requires macOS):
 
-### Optimize Rust Compilation (Optional)
+1. Install iOS prerequisites:
+   ```bash
+   # Install Xcode Command Line Tools
+   xcode-select --install
 
-To optimize Rust compilation for your specific machine:
+   # Install Tauri iOS CLI tools
+   cargo install tauri-cli --features ios
+   ```
 
-```bash
-# Run the optimization script
-./scripts/optimize-rust.sh
-```
+2. Add iOS-specific configuration to `tauri.conf.json`:
+   ```bash
+   # Execute from project root
+   cargo tauri ios init
+   ```
 
-### Building for Production
+3. Build for iOS:
+   ```bash
+   # Development build
+   cargo tauri ios dev
 
-Build a production-ready application:
+   # Production build
+   cargo tauri ios build
+   ```
 
-```bash
-cargo tauri build
-```
+Open the generated Xcode project in `src-tauri/gen/ios/[AppName]` and run on a simulator or device.
 
-Your compiled application will be available in the `src-tauri/target/release/bundle` directory.
+## Advanced Features
+
+### Theme Management
+- Light/Dark mode toggle with Material 3 design
+- Persistent theme settings
+
+### Tauri API Examples
+- Native dialogs and file system access
+- Window management and system information
+- Cross-platform APIs
+
+### Error Handling
+- Global error handler with notifications
+- Structured logging
+
+### Loading Indicators
+- Application loading spinner
+- Operation progress indicators
+
+### Responsive Design
+- Mobile-first approach
+- Adaptive layouts
 
 ## Performance Optimizations
 
 ### Rust Compilation Optimizations
-This project includes several optimizations to speed up Rust compilation:
-
-- **Cargo Configuration**: Custom `.cargo/config.toml` with optimized settings
-- **Rust Toolchain Control**: Specific toolchain requirements in `rust-toolchain.toml`
-- **CI/CD Optimizations**: Efficient caching and build configurations
-- **Release Build Tuning**: Optimized release compilation flags for smaller, faster binaries
+- Custom `.cargo/config.toml` with optimized settings
+- Specific toolchain requirements in `rust-toolchain.toml`
+- CI/CD optimizations with efficient caching
+- Release build tuning for smaller, faster binaries
 
 ### Development Workflow Optimizations
-- Incremental compilation settings for faster dev cycles
-- Efficient Node.js and .NET dependencies caching
+- Incremental compilation for faster dev cycles
+- Efficient dependency caching
 - Parallel compilation enabled by default
 
-## Project Structure
+## CI/CD
 
-```
-/
-├── src/                  # Blazor WebAssembly application source code
-│   ├── Components/       # Reusable Blazor components
-│   ├── Layout/           # Application layout components
-│   ├── Pages/            # Application pages
-│   ├── Services/         # Services for theme, version, etc.
-│   └── wwwroot/          # Static web assets
-└── src-tauri/           # Tauri application source code
-    ├── src/             # Rust source code for the Tauri application
-    │   ├── lib.rs       # Core Tauri functionality
-    │   └── main.rs      # Application entry point
-    ├── Cargo.toml       # Rust dependencies
-    └── tauri.conf.json  # Tauri configuration
-```
-
-## Features Included
-
-### 1. Theme Management
-- Light/Dark mode toggle
-- Multiple theme options
-- Persistent theme settings
-
-### 2. Tauri API Examples
-- Native dialogs
-- File system access
-- Window management
-- System information
-
-### 3. Error Handling
-- Global error handler
-- Error notifications
-- Console logging
-
-### 4. Loading Indicators
-- Application loading spinner
-- Operation indicators
-
-### 5. Responsive Design
-- Works on various screen sizes
-- Mobile-friendly UI
-
-### 6. CI/CD Workflows
-- Continuous Integration with GitHub Actions
-- Automated releases for Windows, macOS, and Linux
-- Automated changelog generation
+This project includes GitHub Actions workflows for:
+- Continuous Integration testing on all platforms
+- Automated releases for desktop platforms
+- Changelog generation
 
 ## Contributing
 
@@ -231,7 +333,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## Acknowledgments
 
-- [Tauri](https://tauri.app/) - For the lightweight desktop framework
+- [Tauri](https://tauri.app/) - For the lightweight application framework
 - [Blazor](https://dotnet.microsoft.com/apps/aspnet/web-apps/blazor) - For the WebAssembly framework
 - [Radzen](https://radzen.com/) - For the Blazor component library
 - [.NET](https://dotnet.microsoft.com/) - For the core framework

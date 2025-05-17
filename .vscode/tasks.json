@@ -104,6 +104,62 @@
                 "kind": "build",
                 "isDefault": false
             }
+        },
+        {
+            "label": "build-android-debug",
+            "type": "shell",
+            "command": "${workspaceFolder}/scripts/mobile-build.sh --android",
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            },
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            }
+        },
+        {
+            "label": "build-android-release",
+            "type": "shell",
+            "command": "${workspaceFolder}/scripts/mobile-build.sh --android --release",
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            },
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            }
+        },
+        {
+            "label": "build-ios-debug",
+            "type": "shell",
+            "command": "${workspaceFolder}/scripts/mobile-build.sh --ios",
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            },
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            }
+        },
+        {
+            "label": "build-ios-release",
+            "type": "shell",
+            "command": "${workspaceFolder}/scripts/mobile-build.sh --ios --release",
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            },
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            }
         }
     ]
 }

@@ -13,12 +13,15 @@ All notable changes to this project will be documented in this file.
 - Example pages for Tauri API integration
 - Settings page for application configuration
 - About page with project information
+- Mobile platform support for Android and iOS
+- Detailed documentation for platform-specific builds
 
 ### Changed
 - Updated to .NET 9.0
 - Modern UI with Material 3 design
 - Improved macOS universal binary build process
 - Enhanced build scripts for development and CI/CD
+- Removed unnecessary Node.js dependency for cleaner setup
 
 ### Fixed
 - WebKitGTK dependency resolution for Ubuntu 24.04
