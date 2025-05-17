@@ -238,4 +238,4 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ---
 
-Created with ❤️ by [DevsTroop](https://github.com/devstroop)
+Created with ❤️ by [Devstroop Team](https://github.com/devstroop)
