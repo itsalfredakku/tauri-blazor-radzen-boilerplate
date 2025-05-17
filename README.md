@@ -1,6 +1,8 @@
 # Tauri + Blazor + Radzen - Boilerplate
 
-![Tauri + Blazor + Radzen](src/wwwroot/images/tauri.svg)
+![Tauri](src/wwwroot/images/tauri.svg)
+![Blazor](src/wwwroot/images/blazor.png)
+![Radzen](src/wwwroot/images/radzen.png)
 
 A modern, lightweight desktop application boilerplate combining the power of [Tauri](https://tauri.app/), [Blazor WebAssembly](https://dotnet.microsoft.com/apps/aspnet/web-apps/blazor), and [Radzen](https://blazor.radzen.com/).
 
