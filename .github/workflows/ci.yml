@@ -44,8 +44,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 'lts/*'
-          cache: 'npm'
-          cache-dependency-path: '**/package-lock.json'
 
       - name: Install Rust stable
         uses: dtolnay/rust-toolchain@stable
@@ -105,7 +103,7 @@ jobs:
 
       - name: Build Tauri Application
         run: |
-          # Set environment variable to skip dev dependencies
+          # Set environment variable to optimize Rust compilation
           export CARGO_PROFILE_DEV_BUILD_OVERRIDE_DEBUG=false
           export CARGO_PROFILE_DEV_DEBUG=0
           cargo tauri build --ci
